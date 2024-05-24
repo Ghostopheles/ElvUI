@@ -122,41 +122,39 @@ end
 function M:ToggleItemLevelInfo(setupCharacterPage)
 	if E.Classic then return end
 
-	if not E:IsAddOnEnabled('DejaCharacterStats') then
-		if setupCharacterPage then
-			M:CreateSlotStrings(_G.CharacterFrame, 'Character')
+	if setupCharacterPage then
+		M:CreateSlotStrings(_G.CharacterFrame, 'Character')
+	end
+
+	if E.db.general.itemLevel.displayCharacterInfo then
+		M:RegisterEvent('AZERITE_ESSENCE_UPDATE', 'UpdateCharacterInfo')
+		M:RegisterEvent('PLAYER_EQUIPMENT_CHANGED', 'UpdateCharacterInfo')
+		M:RegisterEvent('PLAYER_AVG_ITEM_LEVEL_UPDATE', 'UpdateCharacterInfo')
+		M:RegisterEvent('UPDATE_INVENTORY_DURABILITY', 'UpdateCharacterInfo')
+
+		if E.Retail and not E:IsAddOnEnabled("DejaCharacterStats") then
+			_G.CharacterStatsPane.ItemLevelFrame.Value:Hide()
 		end
 
-		if E.db.general.itemLevel.displayCharacterInfo then
-			M:RegisterEvent('AZERITE_ESSENCE_UPDATE', 'UpdateCharacterInfo')
-			M:RegisterEvent('PLAYER_EQUIPMENT_CHANGED', 'UpdateCharacterInfo')
-			M:RegisterEvent('PLAYER_AVG_ITEM_LEVEL_UPDATE', 'UpdateCharacterInfo')
-			M:RegisterEvent('UPDATE_INVENTORY_DURABILITY', 'UpdateCharacterInfo')
-
-			if E.Retail then
-				_G.CharacterStatsPane.ItemLevelFrame.Value:Hide()
-			end
-
-			if not _G.CharacterFrame.CharacterInfoHooked then
-				_G.CharacterFrame:HookScript('OnShow', M.UpdateCharacterInfo)
-				_G.CharacterFrame.CharacterInfoHooked = true
-			end
-
-			if not setupCharacterPage then
-				M:UpdateCharacterInfo()
-			end
-		else
-			M:UnregisterEvent('AZERITE_ESSENCE_UPDATE')
-			M:UnregisterEvent('PLAYER_EQUIPMENT_CHANGED')
-			M:UnregisterEvent('PLAYER_AVG_ITEM_LEVEL_UPDATE')
-			M:UnregisterEvent('UPDATE_INVENTORY_DURABILITY')
-
-			if E.Retail then
-				_G.CharacterStatsPane.ItemLevelFrame.Value:Show()
-			end
-
-			M:ClearPageInfo(_G.CharacterFrame, 'Character')
+		if not _G.CharacterFrame.CharacterInfoHooked then
+			_G.CharacterFrame:HookScript('OnShow', M.UpdateCharacterInfo)
+			_G.CharacterFrame.CharacterInfoHooked = true
 		end
+
+		if not setupCharacterPage then
+			M:UpdateCharacterInfo()
+		end
+	else
+		M:UnregisterEvent('AZERITE_ESSENCE_UPDATE')
+		M:UnregisterEvent('PLAYER_EQUIPMENT_CHANGED')
+		M:UnregisterEvent('PLAYER_AVG_ITEM_LEVEL_UPDATE')
+		M:UnregisterEvent('UPDATE_INVENTORY_DURABILITY')
+
+		if E.Retail then
+			_G.CharacterStatsPane.ItemLevelFrame.Value:Show()
+		end
+
+		M:ClearPageInfo(_G.CharacterFrame, 'Character')
 	end
 
 	if E.db.general.itemLevel.displayInspectInfo then
@@ -242,6 +240,10 @@ end
 
 function M:UpdateAverageString(frame, which, iLevelDB)
 	local charPage, avgItemLevel, avgTotal = which == 'Character'
+
+	if charPage and E:IsAddOnEnabled("DejaCharacterStats") then
+		return;
+	end
 
 	if charPage then
 		avgTotal, avgItemLevel = E:GetPlayerItemLevel() -- rounded average, rounded equipped

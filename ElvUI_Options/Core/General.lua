@@ -250,7 +250,7 @@ blizz.lootRollGroup.args.fontGroup.inline = true
 
 blizz.itemLevelInfo = ACH:Group(L["Item Level"], nil, 4, nil, function(info) return E.db.general.itemLevel[info[#info]] end, function(info, value) E.db.general.itemLevel[info[#info]] = value M:ToggleItemLevelInfo() end, nil, E.Classic)
 blizz.itemLevelInfo.args.displayInspectInfo = ACH:Toggle(L["Display Inspect Info"], L["Shows item level of each item, enchants, and gems when inspecting another player."], 1)
-blizz.itemLevelInfo.args.displayCharacterInfo = ACH:Toggle(L["Display Character Info"], L["Shows item level of each item, enchants, and gems on the character page."], 2, nil, nil, nil, nil, nil, function() return E:IsAddOnEnabled('DejaCharacterStats') end)
+blizz.itemLevelInfo.args.displayCharacterInfo = ACH:Toggle(L["Display Character Info"], L["Shows item level of each item, enchants, and gems on the character page."], 2)
 blizz.itemLevelInfo.args.itemLevelRarity = ACH:Toggle(L["Rarity Color"], nil, 3)
 
 blizz.itemLevelInfo.args.fontGroup = ACH:Group(L["Item Score"], nil, 50, nil, nil, function(info, value) E.db.general.itemLevel[info[#info]] = value M:UpdateInspectPageFonts('Character') M:UpdateInspectPageFonts('Inspect') end, function() return not E.db.general.itemLevel.displayCharacterInfo and not E.db.general.itemLevel.displayInspectInfo end)
